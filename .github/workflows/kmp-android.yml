@@ -1,4 +1,4 @@
-name: KMP + Android (self-hosted)
+name: KMP + Android (GitHub-hosted)
 
 on:
   push:
@@ -8,9 +8,8 @@ on:
 
 jobs:
   validate:
-    # The new repo must have a WSL runner registered.
-    # Default self-hosted labels are normally: self-hosted, Linux, X64.
-    runs-on: [self-hosted, Linux, X64]
+    # Public repository: use GitHub-hosted Linux instead of exposing a self-hosted WSL runner.
+    runs-on: ubuntu-latest
     timeout-minutes: 30
 
     steps:
