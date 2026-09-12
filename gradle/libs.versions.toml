@@ -1,8 +1,8 @@
 [versions]
-agp = "9.0.1"
+agp = "9.1.1"
 kotlin = "2.4.20"
 composeMultiplatform = "1.12.0"
-androidCompileSdk = "36"
+androidCompileSdk = "37"
 androidMinSdk = "24"
 androidTargetSdk = "36"
 androidxActivity = "1.13.0"
@@ -14,7 +14,7 @@ compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.re
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
 compose-material = { module = "org.jetbrains.compose.material:material", version.ref = "composeMultiplatform" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
-compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
+compose-components-resources = { module = "org.jetbrains.compose.components:resources", version.ref = "composeMultiplatform" }
 compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "composeMultiplatform" }
 compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
 
