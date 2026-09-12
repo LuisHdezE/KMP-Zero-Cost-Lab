@@ -1,0 +1,50 @@
+name: iOS KMP Framework (manual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ios-arm64:
+    # Phase 0 deliberately validates Kotlin/Native + Compose for a real iPhone
+    # before we introduce Xcode app packaging/signing.
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.1.0'
+
+      - name: Environment
+        run: |
+          uname -a
+          xcodebuild -version
+          java -version
+          gradle --version
+
+      - name: Compile shared framework for physical iPhone (arm64)
+        run: gradle :shared:linkDebugFrameworkIosArm64 --stacktrace
+
+      - name: Package framework artifact
+        run: |
+          FRAMEWORK="shared/build/bin/iosArm64/debugFramework/Shared.framework"
+          test -d "$FRAMEWORK"
+          ditto -c -k --sequesterRsrc --keepParent "$FRAMEWORK" Shared-iosArm64-debug.zip
+
+      - name: Upload iOS framework
+        uses: actions/upload-artifact@v4
+        with:
+          name: kmp-zero-cost-lab-ios-arm64-framework
+          path: Shared-iosArm64-debug.zip
+          if-no-files-found: error
+          retention-days: 7

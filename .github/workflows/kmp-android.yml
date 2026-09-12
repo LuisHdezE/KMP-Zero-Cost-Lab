@@ -1,0 +1,48 @@
+name: KMP + Android (self-hosted)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    # The new repo must have a WSL runner registered.
+    # Default self-hosted labels are normally: self-hosted, Linux, X64.
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.1.0'
+
+      - name: Environment
+        run: |
+          java -version
+          gradle --version
+
+      - name: Shared Android host tests
+        run: gradle :shared:testAndroidHostTest --stacktrace
+
+      - name: Build Android debug APK
+        run: gradle :androidApp:assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: kmp-zero-cost-lab-android-debug
+          path: androidApp/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 7
