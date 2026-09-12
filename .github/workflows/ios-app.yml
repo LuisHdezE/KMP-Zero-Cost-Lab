@@ -1,0 +1,82 @@
+name: iOS App + unsigned IPA (manual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ios-app:
+    runs-on: macos-15
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.3.1'
+
+      - name: Environment
+        run: |
+          uname -a
+          xcodebuild -version
+          java -version
+          gradle --version
+          xcodebuild -list -project iosApp/iosApp.xcodeproj
+
+      - name: Build unsigned iPhone app
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme iosApp \
+            -configuration Debug \
+            -sdk iphoneos \
+            -derivedDataPath "$PWD/build/ios" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" \
+            build
+
+      - name: Validate app bundle
+        run: |
+          set -euo pipefail
+          APP="$PWD/build/ios/Build/Products/Debug-iphoneos/KMPZeroCostLab.app"
+          test -d "$APP"
+          test -f "$APP/Info.plist"
+          test -x "$APP/KMPZeroCostLab"
+          echo "APP=$APP" >> "$GITHUB_ENV"
+          plutil -p "$APP/Info.plist"
+          file "$APP/KMPZeroCostLab"
+          lipo -info "$APP/KMPZeroCostLab"
+          if codesign -dvv "$APP" 2>/dev/null; then
+            echo "Unexpected: app already has a code signature"
+          else
+            echo "Expected: app bundle is unsigned"
+          fi
+
+      - name: Package unsigned IPA
+        run: |
+          set -euo pipefail
+          rm -rf Payload KMPZeroCostLab-unsigned.ipa
+          mkdir Payload
+          cp -R "$APP" Payload/
+          ditto -c -k --sequesterRsrc --keepParent Payload KMPZeroCostLab-unsigned.ipa
+          unzip -l KMPZeroCostLab-unsigned.ipa | head -80
+          test -s KMPZeroCostLab-unsigned.ipa
+
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: kmp-zero-cost-lab-ios-unsigned-ipa
+          path: KMPZeroCostLab-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 7
