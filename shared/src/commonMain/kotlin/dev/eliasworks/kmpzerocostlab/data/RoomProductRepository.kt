@@ -27,8 +27,8 @@ class RoomProductRepository(
         dao.update(product.toEntity())
     }
 
-    override suspend fun delete(product: Product) {
-        dao.delete(product.toEntity())
+    override suspend fun deleteById(id: Long) {
+        dao.deleteById(id)
     }
 }
 
