@@ -5,7 +5,6 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import kotlinx.coroutines.Dispatchers
 
 @Database(
     entities = [ProductEntity::class],
@@ -25,5 +24,4 @@ expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
 fun buildDatabase(builder: RoomDatabase.Builder<AppDatabase>): AppDatabase =
     builder
         .setDriver(BundledSQLiteDriver())
-        .setQueryCoroutineContext(Dispatchers.IO)
         .build()
