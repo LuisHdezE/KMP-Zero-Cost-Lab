@@ -53,16 +53,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import dev.eliasworks.kmpzerocostlab.ProductController
-import dev.eliasworks.kmpzerocostlab.data.RoomProductRepository
-import dev.eliasworks.kmpzerocostlab.data.local.createDatabase
+import dev.eliasworks.kmpzerocostlab.createAndroidProductController
 import dev.eliasworks.kmpzerocostlab.domain.Product
 
 class MainActivity : ComponentActivity() {
     private val controller by lazy {
-        val database = createDatabase(applicationContext)
-        ProductController(
-            repository = RoomProductRepository(database.productDao())
-        )
+        createAndroidProductController(applicationContext)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
