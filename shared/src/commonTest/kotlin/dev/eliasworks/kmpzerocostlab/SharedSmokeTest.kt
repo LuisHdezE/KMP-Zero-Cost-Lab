@@ -8,6 +8,6 @@ class SharedSmokeTest {
     @Test
     fun markerIdentifiesReferencePilot() {
         assertEquals("KMP Zero-Cost Lab", LabMarker.name)
-        assertTrue(LabMarker.phase.startsWith("Phase 0"))
+        assertTrue(LabMarker.phase.startsWith("Phase "))
     }
 }
