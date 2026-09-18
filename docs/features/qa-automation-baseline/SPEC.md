@@ -1,6 +1,6 @@
 # SPEC: QA Automation Baseline
 
-**State:** In review
+**State:** Approved
 
 <!--
 This document defines WHAT must be true.
