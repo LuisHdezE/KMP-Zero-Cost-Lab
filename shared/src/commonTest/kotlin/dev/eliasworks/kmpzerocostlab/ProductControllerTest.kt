@@ -2,14 +2,22 @@ package dev.eliasworks.kmpzerocostlab
 
 import dev.eliasworks.kmpzerocostlab.domain.Product
 import dev.eliasworks.kmpzerocostlab.domain.ProductRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ProductControllerTest {
     @Test
     fun createTrimsNameAndClampsNegativeNumbers() = runTest {
@@ -20,6 +28,17 @@ class ProductControllerTest {
         runCurrent()
 
         assertEquals(listOf(CreateCall("Widget", 0, 0)), repository.createCalls)
+    }
+
+    @Test
+    fun createPreservesPositiveNumbers() = runTest {
+        val repository = FakeProductRepository()
+        val controller = ProductController(repository, backgroundScope)
+
+        controller.createProduct("Positive", 4, 1250)
+        runCurrent()
+
+        assertEquals(listOf(CreateCall("Positive", 4, 1250)), repository.createCalls)
     }
 
     @Test
@@ -43,6 +62,20 @@ class ProductControllerTest {
 
         assertEquals(
             listOf(Product(id = 7, name = "Updated", quantity = 0, priceCents = 0)),
+            repository.updateCalls,
+        )
+    }
+
+    @Test
+    fun updatePreservesPositiveNumbers() = runTest {
+        val repository = FakeProductRepository()
+        val controller = ProductController(repository, backgroundScope)
+
+        controller.updateProduct(7, "Updated", 8, 2200)
+        runCurrent()
+
+        assertEquals(
+            listOf(Product(id = 7, name = "Updated", quantity = 8, priceCents = 2200)),
             repository.updateCalls,
         )
     }
@@ -116,6 +149,42 @@ class ProductControllerTest {
 
         assertEquals(1, firstObserverCalls)
         assertEquals(2, secondObserverCalls)
+    }
+
+    @Test
+    fun disposeCancelsProductionOwnedScope() = runTest {
+        val repository = FakeProductRepository()
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        try {
+            val controller = ProductController(repository)
+
+            controller.createProduct("Before dispose", 1, 100)
+            runCurrent()
+            controller.dispose()
+            controller.createProduct("After dispose", 2, 200)
+            runCurrent()
+
+            assertEquals(
+                listOf(CreateCall("Before dispose", 1, 100)),
+                repository.createCalls,
+            )
+        } finally {
+            Dispatchers.resetMain()
+        }
+    }
+
+    @Test
+    fun disposeDoesNotCancelInjectedScope() = runTest {
+        val repository = FakeProductRepository()
+        val injectedScope: CoroutineScope = backgroundScope
+        val controller = ProductController(repository, injectedScope)
+        var externalWorkExecuted = false
+
+        controller.dispose()
+        injectedScope.launch { externalWorkExecuted = true }
+        runCurrent()
+
+        assertTrue(externalWorkExecuted)
     }
 }
 
