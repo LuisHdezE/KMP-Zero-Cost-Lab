@@ -52,6 +52,11 @@ jobs:
       - name: COMMON tests on Kotlin Native iOS simulator
         run: gradle :shared:iosSimulatorArm64Test --stacktrace
 
+      - name: Reset app installation for deterministic UI test state
+        run: |
+          set -euo pipefail
+          xcrun simctl uninstall "$IOS_SIMULATOR_UDID" dev.eliasworks.kmpzerocostlab || true
+
       - name: Native XCTest/XCUITest regression
         run: |
           set -euo pipefail
