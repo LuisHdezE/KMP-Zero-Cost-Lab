@@ -10,7 +10,7 @@ jobs:
   validate:
     # Public repository: use GitHub-hosted Linux instead of exposing a self-hosted WSL runner.
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 60
 
     steps:
       - name: Checkout
@@ -51,9 +51,19 @@ jobs:
       - name: Build Android debug APK
         run: gradle :androidApp:assembleDebug --stacktrace
 
+      - name: Enable KVM for managed Android device
+        run: |
+          if [ -e /dev/kvm ]; then
+            sudo chmod 666 /dev/kvm
+          fi
+
+      - name: Android managed-device CRUD regression
+        run: gradle :androidApp:pixel2Api35DebugAndroidTest --stacktrace
+
       - name: QA coverage gate
         run: |
-          python3 scripts/qa/qa_gate.py             --coverage shared/build/reports/kover/report.xml             --min-line 90             --min-branch 85             --check qa-guard-contract=PASS             --check common-boundary=PASS             --check common-jvm-room=PASS             --check android-host=PASS             --check android-lint=PASS             --check android-apk=PASS
+          python3 scripts/qa/qa_gate.py             --coverage shared/build/reports/kover/report.xml             --min-line 90             --min-branch 85             --check qa-guard-contract=PASS             --check common-boundary=PASS             --check common-jvm-room=PASS             --check android-host=PASS             --check android-lint=PASS             --check android-apk=PASS \
+            --check android-ui-managed-device=PASS
 
       - name: Upload QA reports
         if: always()
@@ -63,6 +73,9 @@ jobs:
           path: |
             shared/build/reports/kover/**
             shared/build/reports/tests/**
+            androidApp/build/reports/androidTests/**
+            androidApp/build/outputs/androidTest-results/**
+            androidApp/build/outputs/managed_device_android_test_additional_output/**
           if-no-files-found: warn
           retention-days: 7
 

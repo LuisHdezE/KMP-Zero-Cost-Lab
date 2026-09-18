@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -125,6 +126,7 @@ private fun ProductScreen(controller: ProductController) {
         },
         floatingActionButton = {
             FloatingActionButton(
+                modifier = Modifier.testTag("qa-add-product"),
                 onClick = {
                     editingProduct = null
                     editorVisible = true
@@ -144,6 +146,7 @@ private fun ProductScreen(controller: ProductController) {
             item {
                 Text(
                     text = "${products.size} products",
+                    modifier = Modifier.testTag("qa-product-count"),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -212,10 +215,14 @@ private fun ProductCard(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                TextButton(onClick = onEdit) {
+                TextButton(
+                    modifier = Modifier.testTag("qa-edit-product"),
+                    onClick = onEdit,
+                ) {
                     Text("Edit")
                 }
                 TextButton(
+                    modifier = Modifier.testTag("qa-delete-product"),
                     onClick = onDelete,
                     colors = ButtonDefaults.textButtonColors(
                         contentColor = MaterialTheme.colorScheme.error
@@ -256,7 +263,9 @@ private fun ProductEditorSheet(
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("qa-name-input"),
                 label = { Text("Name") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -268,7 +277,9 @@ private fun ProductEditorSheet(
             OutlinedTextField(
                 value = quantity,
                 onValueChange = { quantity = it.filter(Char::isDigit) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("qa-quantity-input"),
                 label = { Text("Quantity") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -283,7 +294,9 @@ private fun ProductEditorSheet(
             OutlinedTextField(
                 value = priceCents,
                 onValueChange = { priceCents = it.filter(Char::isDigit) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("qa-price-input"),
                 label = { Text("Price in cents") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -296,7 +309,9 @@ private fun ProductEditorSheet(
             )
 
             Button(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("qa-save-product"),
                 enabled = name.isNotBlank(),
                 onClick = {
                     focusManager.clearFocus()
