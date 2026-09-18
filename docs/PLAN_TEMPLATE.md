@@ -92,9 +92,33 @@ Use `docs/ZERO_COST_CI.md`.
 - **If private, validated alternative for iOS builds:** [PENDING / Not applicable]
 - **Publication-readiness review required?** [PENDING / Not applicable]
 
+## QA strategy
+
+Use `docs/QA_STRATEGY.md`.
+
+- **Feature criticality:** [Low / Medium / High / Critical + reason]
+- **Requirements coverage target:** 100% of approved CA mapped to evidence
+- **Changed deterministic code line coverage target:** [Default >= 90% / stricter approved value / justified exception]
+- **Changed deterministic branch/decision coverage target:** [Default >= 85% / stricter approved value / tooling unavailable + alternative]
+- **Critical algorithm/rule scenario coverage:** [PENDING / Not applicable]
+- **Regression scope:** [PENDING]
+- **Architecture checks:** [PENDING / Not applicable]
+- **Static quality checks:** [PENDING / Not applicable]
+- **Android automated QA:** [PENDING / Not applicable]
+- **iOS automated QA:** [PENDING / Not applicable]
+- **Integration QA:** [PENDING / Not applicable]
+- **Accessibility QA:** [PENDING / Not applicable]
+- **Security/privacy QA:** [PENDING / Not applicable]
+- **Performance/resource QA:** [PENDING / Not applicable]
+- **Device/OS matrix:** [PENDING]
+- **Release-blocking defect policy:** [Use default / stricter approved policy]
+- **Coverage tooling and limitations:** [PENDING]
+
+Do not combine incompatible platform coverage reports into a misleading global percentage. Prefer truthful per-surface metrics plus 100% CA traceability.
+
 ## Validation and evidence plan
 
-Use `docs/EVIDENCE_GUIDELINES.md`.
+Use `docs/QA_STRATEGY.md` and `docs/EVIDENCE_GUIDELINES.md`.
 
 | CA | Target | Method | Environment | Evidence to record |
 | --- | --- | --- | --- | --- |
