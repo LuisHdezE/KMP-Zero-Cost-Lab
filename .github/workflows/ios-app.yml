@@ -61,21 +61,46 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf "$PWD/build/ios-tests.xcresult"
-          xcodebuild test             -project iosApp/iosApp.xcodeproj             -scheme iosApp             -configuration Debug             -destination "platform=iOS Simulator,id=$IOS_SIMULATOR_UDID"             -derivedDataPath "$PWD/build/ios-tests"             -resultBundlePath "$PWD/build/ios-tests.xcresult"             -resultBundleVersion 3             -enableCodeCoverage YES             -collect-test-diagnostics never             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             DEVELOPMENT_TEAM=""             test
+          xcodebuild test \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme iosApp \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=$IOS_SIMULATOR_UDID" \
+            -derivedDataPath "$PWD/build/ios-tests" \
+            -resultBundlePath "$PWD/build/ios-tests.xcresult" \
+            -resultBundleVersion 3 \
+            -enableCodeCoverage YES \
+            -collect-test-diagnostics never \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            DEVELOPMENT_TEAM=""
 
       - name: Export scoped Xcode coverage
         run: |
           set -euo pipefail
           mkdir -p "$PWD/build/ios-qa"
-          xcrun xccov view --report "$PWD/build/ios-tests.xcresult"             | tee "$PWD/build/ios-qa/xccov.txt"
-          xcrun xccov view --report --json "$PWD/build/ios-tests.xcresult"             > "$PWD/build/ios-qa/xccov.json"
+          xcrun xccov view --report "$PWD/build/ios-tests.xcresult" \
+            | tee "$PWD/build/ios-qa/xccov.txt"
+          xcrun xccov view --report --json "$PWD/build/ios-tests.xcresult" \
+            > "$PWD/build/ios-qa/xccov.json"
           test -s "$PWD/build/ios-qa/xccov.txt"
           test -s "$PWD/build/ios-qa/xccov.json"
 
       - name: Build unsigned iPhone app
         run: |
           set -euo pipefail
-          xcodebuild             -project iosApp/iosApp.xcodeproj             -scheme iosApp             -configuration Debug             -sdk iphoneos             -derivedDataPath "$PWD/build/ios"             IPHONEOS_DEPLOYMENT_TARGET=16.0             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             CODE_SIGN_IDENTITY=""             DEVELOPMENT_TEAM=""             build
+          xcodebuild \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme iosApp \
+            -configuration Debug \
+            -sdk iphoneos \
+            -derivedDataPath "$PWD/build/ios" \
+            IPHONEOS_DEPLOYMENT_TARGET=16.0 \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" \
+            build
 
       - name: Validate app bundle
         run: |
