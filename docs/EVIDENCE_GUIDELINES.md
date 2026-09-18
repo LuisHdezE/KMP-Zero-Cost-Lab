@@ -2,6 +2,8 @@
 
 Evidence must prove the acceptance criterion being claimed. Select the smallest method that actually demonstrates the behavior.
 
+Use this document together with `docs/QA_STRATEGY.md`. The QA strategy defines coverage goals and quality gates; this document defines what evidence is capable of proving each type of claim.
+
 ## Evidence hierarchy by concern
 
 | Concern | Useful evidence | What is not enough by itself |
@@ -75,6 +77,22 @@ For each migrated behavior, record:
 - comparison result.
 
 If a mismatch is accepted, it is a behavior change and must be reflected in the approved SPEC.
+
+## Coverage evidence
+
+When code coverage is measured, record:
+
+- scope being measured;
+- tool and version when material;
+- line coverage;
+- branch/decision coverage when supported;
+- changed-code coverage when available;
+- excluded/generated code and reason;
+- uncovered critical paths.
+
+Do not average unrelated Kotlin/JVM, Kotlin/Native, Android instrumentation and Swift reports into one number unless a verified toolchain makes that aggregation meaningful.
+
+Coverage percentages complement, but never replace, acceptance-criteria evidence.
 
 ## CI evidence
 
