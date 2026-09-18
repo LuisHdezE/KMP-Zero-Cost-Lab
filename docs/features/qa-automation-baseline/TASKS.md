@@ -1,0 +1,174 @@
+# TASKS: QA Automation Baseline
+
+**Reference PLAN:** docs/features/qa-automation-baseline/PLAN.md
+**PLAN version:** 4a726cadaac35d158521bf81870c3b20b21aab80
+**Implementation authorized:** Yes
+
+## Status vocabulary
+
+- TODO
+- IN PROGRESS
+- BLOCKED
+- DONE
+
+A task is DONE only when implementation and required validation have both completed.
+
+## Tasks
+
+### TASK-KMP-QA-001 · Establish QA host and coverage tooling
+
+- **Status:** IN PROGRESS
+- **Target:** COMMON
+- **RF/CA:** RF-02, RF-03, RF-04, RF-10 / CA-02, CA-03, CA-04, CA-10
+- **Objective:** Add the QA-only JVM target, Kover reporting and coroutine test support.
+- **Scope:** Gradle/version catalog/shared QA source-set configuration only.
+- **Dependencies:** None
+- **Coverage expectation:** >=90% line and >=85% branch for the filtered deterministic COMMON scope.
+- **Regression scope:** Existing Android/iOS targets must continue compiling.
+- **Validation method:** JVM tests, Kover XML/HTML generation, coverage gate.
+- **Evidence required:** CI logs + uploaded coverage report.
+- **Actual result:** Not run
+- **Evidence reference:** PENDING
+
+### TASK-KMP-QA-002 · Cover deterministic COMMON behavior
+
+- **Status:** TODO
+- **Target:** COMMON
+- **RF/CA:** RF-02, RF-04, RF-08 / CA-02, CA-04, CA-08
+- **Objective:** Add regression tests for ProductController, ProductSnapshot and RoomProductRepository mapping.
+- **Scope:** commonTest plus minimal internal test seam preserving public behavior.
+- **Dependencies:** TASK-KMP-QA-001
+- **Coverage expectation:** 95-100% identified meaningful scenarios for ProductController branches where feasible.
+- **Regression scope:** name trimming, blank-name no-op, negative coercion, observation, create/update/delete.
+- **Validation method:** jvmTest and iosSimulatorArm64Test.
+- **Evidence required:** test reports.
+- **Actual result:** Not run
+- **Evidence reference:** PENDING
+
+### TASK-KMP-QA-003 · Automate Room CRUD and same-schema persistence
+
+- **Status:** TODO
+- **Target:** COMMON
+- **RF/CA:** RF-07, RF-08 / CA-07, CA-08
+- **Objective:** Add JVM Room/SQLite integration tests for CRUD and close/reopen persistence.
+- **Scope:** QA-only jvmMain/jvmTest. Production schema remains v1.
+- **Dependencies:** TASK-KMP-QA-001
+- **Coverage expectation:** 100% planned CRUD scenarios.
+- **Regression scope:** empty/read ordering/create/update/delete/reopen.
+- **Validation method:** jvmTest with Room 3 + BundledSQLiteDriver.
+- **Evidence required:** test report.
+- **Actual result:** Not run
+- **Evidence reference:** PENDING
+
+### TASK-KMP-QA-004 · Add architecture/static quality guard
+
+- **Status:** TODO
+- **Target:** MULTI
+- **RF/CA:** RF-09 / CA-09
+- **Objective:** Fail CI if Android/Apple/UI framework dependencies leak into commonMain.
+- **Scope:** lightweight repository script; Android lint retained.
+- **Dependencies:** None
+- **Coverage expectation:** Not applicable.
+- **Regression scope:** commonMain dependency boundaries.
+- **Validation method:** script self-check + CI execution.
+- **Evidence required:** CI log.
+- **Actual result:** Not run
+- **Evidence reference:** PENDING
+
+### TASK-KMP-QA-005 · Add executable QA gate
+
+- **Status:** TODO
+- **Target:** MULTI
+- **RF/CA:** RF-01, RF-10, RF-12, RF-13 / CA-01, CA-10, CA-12, CA-13
+- **Objective:** Enforce coverage thresholds and mandatory evidence states with controlled PASS/FAIL tests.
+- **Scope:** scripts/qa using Python standard library only.
+- **Dependencies:** TASK-KMP-QA-001
+- **Coverage expectation:** 100% gate contract scenarios.
+- **Regression scope:** PASS/FAIL/NOT RUN/NOT APPLICABLE and below-threshold cases.
+- **Validation method:** Python unittest + real Kover XML verification.
+- **Evidence required:** CI log.
+- **Actual result:** Not run
+- **Evidence reference:** PENDING
+
+### TASK-KMP-QA-006 · Android native regression automation
+
+- **Status:** TODO
+- **Target:** ANDROID
+- **RF/CA:** RF-05, RF-08, RF-14 / CA-05, CA-08, CA-14
+- **Objective:** Add one robust Compose CRUD end-to-end flow on a managed Android device.
+- **Scope:** androidTest/testability metadata + CI managed device.
+- **Dependencies:** TASK-KMP-QA-001..005
+- **Coverage expectation:** scenario-based; UI line percentage is not the primary metric.
+- **Regression scope:** empty/create/read/update/delete.
+- **Validation method:** Android instrumentation on managed device.
+- **Evidence required:** test report/artifact.
+- **Actual result:** Not run
+- **Evidence reference:** PENDING
+
+### TASK-KMP-QA-007 · iOS native regression automation
+
+- **Status:** TODO
+- **Target:** IOS
+- **RF/CA:** RF-06, RF-08, RF-14 / CA-06, CA-08, CA-14
+- **Objective:** Run COMMON tests through Kotlin/Native and add native XCTest/XCUITest regression.
+- **Scope:** iOS simulator test targets + CI result bundle.
+- **Dependencies:** TASK-KMP-QA-001..005
+- **Coverage expectation:** scoped Xcode native coverage plus scenario evidence.
+- **Regression scope:** launch/create/read/update/delete/relaunch persistence where stable.
+- **Validation method:** iosSimulatorArm64Test + Xcode tests.
+- **Evidence required:** test summary/xcresult.
+- **Actual result:** Not run
+- **Evidence reference:** PENDING
+
+### TASK-KMP-QA-008 · Close QA evidence ledger
+
+- **Status:** TODO
+- **Target:** MULTI
+- **RF/CA:** RF-01..RF-15 / CA-01..CA-15
+- **Objective:** Reconcile executed evidence, remaining gaps and final QA gate.
+- **Scope:** TASKS/validation docs only after tests execute.
+- **Dependencies:** TASK-KMP-QA-001..007
+- **Coverage expectation:** 100% required CA accounted for.
+- **Regression scope:** all approved QA baseline behavior.
+- **Validation method:** evidence review against CI/device results.
+- **Evidence required:** completed ledger.
+- **Actual result:** Not run
+- **Evidence reference:** PENDING
+
+## QA ledger
+
+| QA dimension | Target | Planned threshold / scenarios | Actual result | Status |
+| --- | --- | --- | --- | --- |
+| Requirements / CA traceability | MULTI | 100% required CA mapped | PENDING | NOT RUN |
+| Deterministic line coverage | COMMON/JVM | >= 90% | PENDING | NOT RUN |
+| Deterministic branch coverage | COMMON/JVM | >= 85% | PENDING | NOT RUN |
+| Critical controller scenarios | COMMON | 95-100% meaningful scenarios | PENDING | NOT RUN |
+| Room CRUD/persistence | COMMON/JVM | all planned scenarios | PENDING | NOT RUN |
+| COMMON portability | IOS | common suite on iosSimulatorArm64 | PENDING | NOT RUN |
+| Architecture/static | MULTI | approved checks pass | PENDING | NOT RUN |
+| Android UI regression | ANDROID | approved CRUD flow | PENDING | NOT RUN |
+| iOS UI regression | IOS | approved CRUD flow | PENDING | NOT RUN |
+
+## Acceptance evidence ledger
+
+| CA | Target | Task(s) | Status | Executed evidence | Actual result |
+| --- | --- | --- | --- | --- | --- |
+| CA-01 | MULTI | 005,008 | NOT RUN | PENDING | PENDING |
+| CA-02 | COMMON | 002 | NOT RUN | PENDING | PENDING |
+| CA-03 | COMMON | 001,002 | NOT RUN | PENDING | PENDING |
+| CA-04 | COMMON | 002 | NOT RUN | PENDING | PENDING |
+| CA-05 | ANDROID | 006 | NOT RUN | PENDING | PENDING |
+| CA-06 | IOS | 007 | NOT RUN | PENDING | PENDING |
+| CA-07 | MULTI | 003,006,007 | NOT RUN | PENDING | PENDING |
+| CA-08 | MULTI | 002,003,006,007 | NOT RUN | PENDING | PENDING |
+| CA-09 | MULTI | 004 | NOT RUN | PENDING | PENDING |
+| CA-10 | MULTI | 001,005 | NOT RUN | PENDING | PENDING |
+| CA-11 | MULTI | 006,007 | NOT RUN | PENDING | PENDING |
+| CA-12 | MULTI | 005,008 | NOT RUN | PENDING | PENDING |
+| CA-13 | MULTI | 005 | NOT RUN | PENDING | PENDING |
+| CA-14 | ANDROID-UX/IOS-UX | 006,007 | NOT RUN | PENDING | PENDING |
+| CA-15 | MULTI | 008 | NOT RUN | PENDING | PENDING |
+
+## Outstanding checks
+
+All implementation checks are pending at branch creation.
