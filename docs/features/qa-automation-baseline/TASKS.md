@@ -27,12 +27,12 @@ A task is DONE only when implementation and required validation have both comple
 - **Regression scope:** Existing Android/iOS targets must continue compiling.
 - **Validation method:** JVM tests, Kover XML/HTML generation, coverage gate.
 - **Evidence required:** CI logs + uploaded coverage report.
-- **Actual result:** Not run
-- **Evidence reference:** PENDING
+- **Actual result:** JVM QA host, Kover XML/HTML and 90/85 gate execute successfully on Ubuntu. Final scoped deterministic COMMON result: LINE 100.00%, BRANCH 100.00%. Existing Android host/lint/APK are green. iOS compilation remains pending before this task can be DONE.
+- **Evidence reference:** GitHub Actions run #40, run 35296308302, artifact `kmp-zero-cost-lab-qa-core` (10527569096).
 
 ### TASK-KMP-QA-002 · Cover deterministic COMMON behavior
 
-- **Status:** TODO
+- **Status:** IN PROGRESS
 - **Target:** COMMON
 - **RF/CA:** RF-02, RF-04, RF-08 / CA-02, CA-04, CA-08
 - **Objective:** Add regression tests for ProductController, ProductSnapshot and RoomProductRepository mapping.
@@ -42,12 +42,12 @@ A task is DONE only when implementation and required validation have both comple
 - **Regression scope:** name trimming, blank-name no-op, negative coercion, observation, create/update/delete.
 - **Validation method:** jvmTest and iosSimulatorArm64Test.
 - **Evidence required:** test reports.
-- **Actual result:** Not run
-- **Evidence reference:** PENDING
+- **Actual result:** ProductController and RoomProductRepository COMMON regression tests pass on JVM and Android host. ProductController decision branches are included in the scoped 100% line / 100% branch result. Kotlin/Native execution on iosSimulatorArm64 is still pending.
+- **Evidence reference:** GitHub Actions run #40, run 35296308302.
 
 ### TASK-KMP-QA-003 · Automate Room CRUD and same-schema persistence
 
-- **Status:** TODO
+- **Status:** DONE
 - **Target:** COMMON
 - **RF/CA:** RF-07, RF-08 / CA-07, CA-08
 - **Objective:** Add JVM Room/SQLite integration tests for CRUD and close/reopen persistence.
@@ -57,12 +57,12 @@ A task is DONE only when implementation and required validation have both comple
 - **Regression scope:** empty/read ordering/create/update/delete/reopen.
 - **Validation method:** jvmTest with Room 3 + BundledSQLiteDriver.
 - **Evidence required:** test report.
-- **Actual result:** Not run
-- **Evidence reference:** PENDING
+- **Actual result:** PASS. QA-only JVM Room test executed empty DB, create, ordered read, update, delete, close/reopen and preserved the remaining row with production schema still at version 1.
+- **Evidence reference:** GitHub Actions run #40, COMMON JVM + Room step, run 35296308302.
 
 ### TASK-KMP-QA-004 · Add architecture/static quality guard
 
-- **Status:** TODO
+- **Status:** DONE
 - **Target:** MULTI
 - **RF/CA:** RF-09 / CA-09
 - **Objective:** Fail CI if Android/Apple/UI framework dependencies leak into commonMain.
@@ -72,12 +72,12 @@ A task is DONE only when implementation and required validation have both comple
 - **Regression scope:** commonMain dependency boundaries.
 - **Validation method:** script self-check + CI execution.
 - **Evidence required:** CI log.
-- **Actual result:** Not run
-- **Evidence reference:** PENDING
+- **Actual result:** PASS. Boundary guard contract tests passed, real commonMain boundary scan passed, and Android lint passed.
+- **Evidence reference:** GitHub Actions run #40, run 35296308302.
 
 ### TASK-KMP-QA-005 · Add executable QA gate
 
-- **Status:** TODO
+- **Status:** DONE
 - **Target:** MULTI
 - **RF/CA:** RF-01, RF-10, RF-12, RF-13 / CA-01, CA-10, CA-12, CA-13
 - **Objective:** Enforce coverage thresholds and mandatory evidence states with controlled PASS/FAIL tests.
@@ -87,8 +87,8 @@ A task is DONE only when implementation and required validation have both comple
 - **Regression scope:** PASS/FAIL/NOT RUN/NOT APPLICABLE and below-threshold cases.
 - **Validation method:** Python unittest + real Kover XML verification.
 - **Evidence required:** CI log.
-- **Actual result:** Not run
-- **Evidence reference:** PENDING
+- **Actual result:** PASS. Contract suite proves PASS and controlled failure cases for low line coverage, low branch coverage, mandatory FAIL and mandatory NOT_RUN. The real gate initially rejected 89.06%/70.00% in run #39, then accepted the corrected 100.00%/100.00% scoped result in run #40 without lowering thresholds.
+- **Evidence reference:** Runs #39 (35296093947) and #40 (35296308302).
 
 ### TASK-KMP-QA-006 · Android native regression automation
 
@@ -139,13 +139,13 @@ A task is DONE only when implementation and required validation have both comple
 
 | QA dimension | Target | Planned threshold / scenarios | Actual result | Status |
 | --- | --- | --- | --- | --- |
-| Requirements / CA traceability | MULTI | 100% required CA mapped | PENDING | NOT RUN |
-| Deterministic line coverage | COMMON/JVM | >= 90% | PENDING | NOT RUN |
-| Deterministic branch coverage | COMMON/JVM | >= 85% | PENDING | NOT RUN |
-| Critical controller scenarios | COMMON | 95-100% meaningful scenarios | PENDING | NOT RUN |
-| Room CRUD/persistence | COMMON/JVM | all planned scenarios | PENDING | NOT RUN |
+| Requirements / CA traceability | MULTI | 100% required CA mapped | Ledger exists; final closure waits for Android/iOS native tasks | NOT RUN |
+| Deterministic line coverage | COMMON/JVM | >= 90% | 100.00% on explicitly filtered deterministic COMMON scope | PASS |
+| Deterministic branch coverage | COMMON/JVM | >= 85% | 100.00% on explicitly filtered deterministic COMMON scope | PASS |
+| Critical controller scenarios | COMMON | 95-100% meaningful scenarios | Positive/negative/no-op/observation/restart/dispose branches covered on JVM/Android host; Native run pending | NOT RUN |
+| Room CRUD/persistence | COMMON/JVM | all planned scenarios | Empty/create/order/update/delete/close/reopen PASS | PASS |
 | COMMON portability | IOS | common suite on iosSimulatorArm64 | PENDING | NOT RUN |
-| Architecture/static | MULTI | approved checks pass | PENDING | NOT RUN |
+| Architecture/static | MULTI | approved checks pass | Boundary guard PASS; Android lint PASS | PASS |
 | Android UI regression | ANDROID | approved CRUD flow | PENDING | NOT RUN |
 | iOS UI regression | IOS | approved CRUD flow | PENDING | NOT RUN |
 
@@ -155,20 +155,34 @@ A task is DONE only when implementation and required validation have both comple
 | --- | --- | --- | --- | --- | --- |
 | CA-01 | MULTI | 005,008 | NOT RUN | PENDING | PENDING |
 | CA-02 | COMMON | 002 | NOT RUN | PENDING | PENDING |
-| CA-03 | COMMON | 001,002 | NOT RUN | PENDING | PENDING |
-| CA-04 | COMMON | 002 | NOT RUN | PENDING | PENDING |
+| CA-03 | COMMON | 001,002 | PASS | Kover scoped deterministic COMMON report | LINE 100.00%, BRANCH 100.00%, thresholds 90/85 |
+| CA-04 | COMMON | 002 | NOT RUN | JVM/Android host scenarios executed | Native portability portion remains pending before full COMMON scenario claim |
 | CA-05 | ANDROID | 006 | NOT RUN | PENDING | PENDING |
 | CA-06 | IOS | 007 | NOT RUN | PENDING | PENDING |
 | CA-07 | MULTI | 003,006,007 | NOT RUN | PENDING | PENDING |
 | CA-08 | MULTI | 002,003,006,007 | NOT RUN | PENDING | PENDING |
-| CA-09 | MULTI | 004 | NOT RUN | PENDING | PENDING |
-| CA-10 | MULTI | 001,005 | NOT RUN | PENDING | PENDING |
+| CA-09 | MULTI | 004 | PASS | Boundary guard + Android lint, run #40 | Detectable commonMain platform leak guard and lint PASS |
+| CA-10 | MULTI | 001,005 | PASS | Scoped Kover report + QA gate output | Metrics explicitly reported as COMMON/JVM scope; no synthetic global percentage |
 | CA-11 | MULTI | 006,007 | NOT RUN | PENDING | PENDING |
-| CA-12 | MULTI | 005,008 | NOT RUN | PENDING | PENDING |
-| CA-13 | MULTI | 005 | NOT RUN | PENDING | PENDING |
+| CA-12 | MULTI | 005,008 | NOT RUN | Core gate statuses exercised | Final multi-target completion report still pending |
+| CA-13 | MULTI | 005 | PASS | Gate contract tests + real fail-then-pass CI sequence | Run #39 rejected 89.06/70.00; run #40 accepted 100/100 |
 | CA-14 | ANDROID-UX/IOS-UX | 006,007 | NOT RUN | PENDING | PENDING |
 | CA-15 | MULTI | 008 | NOT RUN | PENDING | PENDING |
 
 ## Outstanding checks
 
-All implementation checks are pending at branch creation.
+- Execute COMMON regression suite through `iosSimulatorArm64Test`.
+- Revalidate iOS app compilation after the QA-only JVM target/test seam changes.
+- Implement Android managed-device native CRUD regression (TASK-KMP-QA-006).
+- Implement iOS XCTest/XCUITest native regression (TASK-KMP-QA-007).
+- Close 100% CA evidence ledger after all mandatory target checks (TASK-KMP-QA-008).
+
+## Core increment evidence
+
+- **Run #39 / 35296093947:** QA infrastructure and Room tests passed; real coverage gate correctly failed at LINE 89.06%, BRANCH 70.00%.
+- **Run #40 / 35296308302:** complete Ubuntu core validation PASS.
+- **Final scoped Kover result:** LINE 100.00%, BRANCH 100.00% for `ProductController/ProductSnapshot/RoomProductRepository` only.
+- **QA artifact:** `kmp-zero-cost-lab-qa-core`, artifact 10527569096.
+- **APK artifact:** `kmp-zero-cost-lab-android-debug`, artifact 10527963830.
+- **Android regression checks in run #40:** host tests PASS, lint PASS, debug APK PASS.
+- This is not a claim of 100% repository-wide or Kotlin/Native/Swift coverage.
