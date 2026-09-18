@@ -25,6 +25,8 @@ A task is DONE only when its required implementation and validation have both be
 - **Dependencies:** [None / task IDs]
 - **Files/components expected:** [PENDING]
 - **Validation method:** [PENDING]
+- **Coverage expectation:** [line/branch/scenario/CA coverage target or Not applicable]
+- **Regression scope:** [PENDING]
 - **Evidence required:** [PENDING]
 - **Actual result:** [Not run]
 - **Evidence reference:** [PENDING]
@@ -54,6 +56,19 @@ A task is DONE only when its required implementation and validation have both be
 - **Evidence required:** [PENDING]
 - **Actual result:** [Not run]
 - **Evidence reference:** [PENDING]
+
+## QA ledger
+
+| QA dimension | Target | Planned threshold / scenarios | Actual result | Status |
+| --- | --- | --- | --- | --- |
+| Requirements / CA traceability | MULTI | 100% required CA mapped | [PENDING] | NOT RUN |
+| Changed deterministic line coverage | COMMON | >= 90% default | [PENDING] | NOT RUN |
+| Changed deterministic branch coverage | COMMON | >= 85% default | [PENDING] | NOT RUN |
+| Regression | MULTI | Approved regression scope passes | [PENDING] | NOT RUN |
+| Architecture/static | MULTI | Approved checks pass | [PENDING] | NOT RUN |
+| Device/OS | ANDROID/IOS | Approved matrix executed | [PENDING] | NOT RUN |
+
+Add or remove rows according to the approved PLAN. Do not keep irrelevant rows merely to improve optics.
 
 ## Acceptance evidence ledger
 
