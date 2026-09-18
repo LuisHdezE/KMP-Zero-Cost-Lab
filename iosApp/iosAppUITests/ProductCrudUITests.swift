@@ -13,9 +13,7 @@ final class ProductCrudUITests: XCTestCase {
         ]
         app.launch()
 
-        let count = app.staticTexts["qa-product-count"]
-        XCTAssertTrue(count.waitForExistence(timeout: 10))
-        XCTAssertEqual(count.label.lowercased(), "0 products")
+        assertProductCount(0, in: app)
 
         let addButton = app.buttons["qa-add-product"]
         XCTAssertTrue(addButton.waitForExistence(timeout: 5))
@@ -32,13 +30,13 @@ final class ProductCrudUITests: XCTestCase {
 
         XCTAssertTrue(app.staticTexts["QA Widget"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.staticTexts["$1.00"].exists)
-        XCTAssertEqual(app.staticTexts["qa-product-count"].label.lowercased(), "1 products")
+        assertProductCount(1, in: app)
 
         app.terminate()
         app.launch()
 
         XCTAssertTrue(app.staticTexts["QA Widget"].waitForExistence(timeout: 10))
-        XCTAssertEqual(app.staticTexts["qa-product-count"].label, "1 products")
+        assertProductCount(1, in: app)
 
         let row = app.otherElements["qa-product-row"]
         XCTAssertTrue(row.waitForExistence(timeout: 5))
@@ -65,7 +63,23 @@ final class ProductCrudUITests: XCTestCase {
         deleteButton.tap()
 
         XCTAssertTrue(app.staticTexts["No Products"].waitForExistence(timeout: 10))
-        XCTAssertEqual(app.staticTexts["qa-product-count"].label.lowercased(), "0 products")
+        assertProductCount(0, in: app)
         XCTAssertFalse(app.staticTexts["QA Widget Updated"].exists)
+    }
+
+    private func assertProductCount(
+        _ expected: Int,
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let count = app.staticTexts["qa-product-count"]
+        XCTAssertTrue(count.waitForExistence(timeout: 10), file: file, line: line)
+        XCTAssertEqual(
+            count.label.lowercased(),
+            "\(expected) products",
+            file: file,
+            line: line
+        )
     }
 }
