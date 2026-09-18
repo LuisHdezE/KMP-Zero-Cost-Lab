@@ -50,15 +50,40 @@ Allowed status values:
 | P4-A02 | ANDROID | Real Room schema v1 -> v2 migration preserves existing data | No migration implemented/executed | NOT RUN |
 | P4-I02 | IOS | Real Room schema v1 -> v2 migration preserves existing data | No migration implemented/executed | NOT RUN |
 
-Current database schema is version 1. A restart test or an app upgrade with the same schema is **not** evidence of a schema migration.
+Current database schema is version 1. A restart, close/reopen, terminate/relaunch, or same-schema app update is **not** evidence of a schema migration.
+
+## QA Automation Baseline
+
+| ID | Target | Validation | Evidence source | Status |
+|---|---|---|---|---|
+| QA-01 | COMMON/JVM | Deterministic COMMON line coverage meets >= 90% gate | Kover run #40 / `35296308302`; final scoped result 100.00% | PASS |
+| QA-02 | COMMON/JVM | Deterministic COMMON branch coverage meets >= 85% gate | Kover run #40 / `35296308302`; final scoped result 100.00% | PASS |
+| QA-03 | COMMON | Real QA gate rejects insufficient coverage without threshold reduction | Run #39 / `35296093947` rejected 89.06% LINE / 70.00% BRANCH | PASS |
+| QA-04 | COMMON/JVM | Room CRUD + same-schema close/reopen persistence | JVM Room integration suite, run #40 | PASS |
+| QA-05 | COMMON | COMMON source-set architecture boundary guard | Boundary guard + contract tests, run #40 | PASS |
+| QA-06 | ANDROID-UX | Native Compose CRUD regression on managed Android device | Pixel 2 API 35, run #44 / `35297235909` | PASS |
+| QA-07 | IOS | COMMON regression suite executes under Kotlin/Native | `iosSimulatorArm64Test`, final iOS run #22 / `35304772114` | PASS |
+| QA-08 | IOS-UX | Native SwiftUI CRUD regression | XCUITest, final iOS run #22 / `35304772114` | PASS |
+| QA-09 | IOS | Room data survives terminate/relaunch inside one isolated XCUITest scenario | Final iOS run #22 / `35304772114` | PASS |
+| QA-10 | IOS-UX | Native Xcode application line coverage exported | `xccov`: KMPZeroCostLab.app 97.51% (745/764), artifact `10531750207` | PASS |
+| QA-11 | MULTI | Android and iOS final regression lanes pass on the same technical HEAD | HEAD `32ba6153dfc540d02e239149d393ec07a345f879`; Android #51 + iOS #22 | PASS |
+| QA-12 | IOS | Unsigned `iphoneos` app and IPA produced after native QA | iOS run #22; IPA artifact `10531750210` | PASS |
+| QA-13 | MULTI | QA evidence remains target-scoped with no synthetic global percentage | Kover COMMON/JVM and Xcode Swift metrics reported separately | PASS |
+
+Coverage interpretation:
+
+- Kover 100.00% LINE / 100.00% BRANCH applies only to the explicitly filtered deterministic COMMON/JVM scope (`ProductController` / `ProductSnapshot` / `RoomProductRepository`).
+- Xcode `xccov` 97.51% (745/764) applies to `KMPZeroCostLab.app` native Xcode/Swift execution.
+- Kotlin/Native COMMON execution is PASS evidence, but no unsupported Kotlin/Native line/branch percentage is claimed.
+- These values must not be averaged into a repository-wide or cross-platform score.
 
 ## Zero-cost workflow
 
 | ID | Scope | Validation | Evidence | Status |
 |---|---|---|---|---|
-| P5-01 | PUBLIC REPO | Standard GitHub-hosted Ubuntu is used for routine KMP/Android CI | Current `.github/workflows/kmp-android.yml` | PASS |
-| P5-02 | PUBLIC REPO | Standard GitHub-hosted macOS is used for iOS/Xcode build | Current `.github/workflows/ios-app.yml` | PASS |
-| P5-03 | PUBLIC REPO | Validated lab path required no paid build infrastructure | Historical lab validation | PASS |
+| P5-01 | PUBLIC REPO | Standard GitHub-hosted Ubuntu is used for routine KMP/Android CI | Current `.github/workflows/kmp-android.yml` + final Android run #51 | PASS |
+| P5-02 | PUBLIC REPO | Standard GitHub-hosted macOS is used for iOS/Kotlin-Native/Xcode QA and build | Current `.github/workflows/ios-app.yml` + final iOS run #22 | PASS |
+| P5-03 | PUBLIC REPO | Validated lab path required no paid build infrastructure | Historical lab validation + QA baseline runs | PASS |
 | P5-04 | PRIVATE REPO | Zero-cost iOS CI strategy is validated | No private-repository strategy selected | NOT RUN |
 | P5-05 | OPTIONAL FALLBACK | Codemagic fallback is validated | Not required by current public-lab path | NOT APPLICABLE |
 
@@ -73,15 +98,22 @@ Repository history supports these major milestones:
 - PR #3: runnable iPhone application and unsigned IPA packaging.
 - PR #4: shared Room/SQLite CRUD and physical iPhone persistence/upgrade evidence.
 - PR #5: platform-native Android/iOS UX plus physical Android CRUD/persistence and physical iPhone regression validation.
+- QA core increment: deterministic COMMON coverage gate, Room JVM integration, architecture guard and controlled fail/pass evidence.
+- Android QA increment: native Compose CRUD on a Gradle Managed Device.
+- iOS QA increment: COMMON Kotlin/Native execution, native SwiftUI XCUITest CRUD/relaunch persistence, `xccov`, unsigned device build and IPA.
+
+See `docs/features/qa-automation-baseline/COMPLETION.md` for the QA Automation Baseline completion record.
 
 ## Current stop condition
 
-The core public-lab KMP path is validated, but the persistence story is **not fully closed** until the explicit schema migration proof exists on both targets.
+The **QA Automation Baseline feature is complete**, but the broader persistence story is **not fully closed** until the explicit migration/upgrade proofs below exist.
 
-The next high-value validation is therefore:
+The next high-value validation remains:
 
 1. Android installed-upgrade preservation;
 2. Room v1 -> v2 non-destructive migration on Android;
 3. Room v1 -> v2 non-destructive migration on iOS.
 
-No screenshot, fresh install or green build may substitute for those checks.
+Private-repository zero-cost iOS CI is also still unvalidated.
+
+No screenshot, fresh install, same-schema relaunch, coverage percentage or green build may substitute for those checks.
