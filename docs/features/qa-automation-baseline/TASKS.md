@@ -92,7 +92,7 @@ A task is DONE only when implementation and required validation have both comple
 
 ### TASK-KMP-QA-006 · Android native regression automation
 
-- **Status:** TODO
+- **Status:** DONE
 - **Target:** ANDROID
 - **RF/CA:** RF-05, RF-08, RF-14 / CA-05, CA-08, CA-14
 - **Objective:** Add one robust Compose CRUD end-to-end flow on a managed Android device.
@@ -102,8 +102,8 @@ A task is DONE only when implementation and required validation have both comple
 - **Regression scope:** empty/create/read/update/delete.
 - **Validation method:** Android instrumentation on managed device.
 - **Evidence required:** test report/artifact.
-- **Actual result:** Not run
-- **Evidence reference:** PENDING
+- **Actual result:** PASS. A real Compose instrumentation flow executed on a GitHub-hosted Gradle Managed Device (Pixel 2, API 35, aosp-atd) and verified empty state, create, render, edit, updated render, delete and return to empty state. Existing COMMON/JVM/Room, Android host, lint, APK and 90/85 coverage gate remained green.
+- **Evidence reference:** GitHub Actions run #44, run 35297235909, job 105452197227; QA artifact `kmp-zero-cost-lab-qa-core` (10528925603).
 
 ### TASK-KMP-QA-007 · iOS native regression automation
 
@@ -146,7 +146,7 @@ A task is DONE only when implementation and required validation have both comple
 | Room CRUD/persistence | COMMON/JVM | all planned scenarios | Empty/create/order/update/delete/close/reopen PASS | PASS |
 | COMMON portability | IOS | common suite on iosSimulatorArm64 | PENDING | NOT RUN |
 | Architecture/static | MULTI | approved checks pass | Boundary guard PASS; Android lint PASS | PASS |
-| Android UI regression | ANDROID | approved CRUD flow | PENDING | NOT RUN |
+| Android UI regression | ANDROID | approved CRUD flow | Managed Device API 35 verified empty/create/read/edit/update/delete/empty | PASS |
 | iOS UI regression | IOS | approved CRUD flow | PENDING | NOT RUN |
 
 ## Acceptance evidence ledger
@@ -157,23 +157,22 @@ A task is DONE only when implementation and required validation have both comple
 | CA-02 | COMMON | 002 | NOT RUN | PENDING | PENDING |
 | CA-03 | COMMON | 001,002 | PASS | Kover scoped deterministic COMMON report | LINE 100.00%, BRANCH 100.00%, thresholds 90/85 |
 | CA-04 | COMMON | 002 | NOT RUN | JVM/Android host scenarios executed | Native portability portion remains pending before full COMMON scenario claim |
-| CA-05 | ANDROID | 006 | NOT RUN | PENDING | PENDING |
+| CA-05 | ANDROID | 006 | PASS | Managed Device CRUD regression, run #44 | Native Material 3 flow passed on Pixel 2 API 35 |
 | CA-06 | IOS | 007 | NOT RUN | PENDING | PENDING |
 | CA-07 | MULTI | 003,006,007 | NOT RUN | PENDING | PENDING |
-| CA-08 | MULTI | 002,003,006,007 | NOT RUN | PENDING | PENDING |
+| CA-08 | MULTI | 002,003,006,007 | NOT RUN | COMMON/JVM/Room and Android native regression PASS | iOS COMMON/native evidence still pending before multi-target PASS |
 | CA-09 | MULTI | 004 | PASS | Boundary guard + Android lint, run #40 | Detectable commonMain platform leak guard and lint PASS |
 | CA-10 | MULTI | 001,005 | PASS | Scoped Kover report + QA gate output | Metrics explicitly reported as COMMON/JVM scope; no synthetic global percentage |
-| CA-11 | MULTI | 006,007 | NOT RUN | PENDING | PENDING |
+| CA-11 | MULTI | 006,007 | NOT RUN | Android Managed Device evidence PASS | iOS simulator/native evidence still pending |
 | CA-12 | MULTI | 005,008 | NOT RUN | Core gate statuses exercised | Final multi-target completion report still pending |
 | CA-13 | MULTI | 005 | PASS | Gate contract tests + real fail-then-pass CI sequence | Run #39 rejected 89.06/70.00; run #40 accepted 100/100 |
-| CA-14 | ANDROID-UX/IOS-UX | 006,007 | NOT RUN | PENDING | PENDING |
+| CA-14 | ANDROID-UX/IOS-UX | 006,007 | NOT RUN | Android native Material 3 automation PASS | iOS SwiftUI/XCUITest still pending |
 | CA-15 | MULTI | 008 | NOT RUN | PENDING | PENDING |
 
 ## Outstanding checks
 
 - Execute COMMON regression suite through `iosSimulatorArm64Test`.
 - Revalidate iOS app compilation after the QA-only JVM target/test seam changes.
-- Implement Android managed-device native CRUD regression (TASK-KMP-QA-006).
 - Implement iOS XCTest/XCUITest native regression (TASK-KMP-QA-007).
 - Close 100% CA evidence ledger after all mandatory target checks (TASK-KMP-QA-008).
 
@@ -185,4 +184,9 @@ A task is DONE only when implementation and required validation have both comple
 - **QA artifact:** `kmp-zero-cost-lab-qa-core`, artifact 10527569096.
 - **APK artifact:** `kmp-zero-cost-lab-android-debug`, artifact 10527963830.
 - **Android regression checks in run #40:** host tests PASS, lint PASS, debug APK PASS.
+- **Android native UI evidence, run #44 / 35297235909:** Gradle Managed Device Pixel 2 API 35 PASS for create/read/edit/update/delete with the existing Material 3 UI.
+- **Run #42:** exposed obsolete Managed Device DSL usage before device startup.
+- **Run #43:** exposed incorrect Compose UI test imports before device startup.
+- Both defects were corrected without weakening the scenario or QA gate.
+- **Run #44:** full Android stack PASS, including Managed Device CRUD and scoped Kover 100.00% line / 100.00% branch.
 - This is not a claim of 100% repository-wide or Kotlin/Native/Swift coverage.
