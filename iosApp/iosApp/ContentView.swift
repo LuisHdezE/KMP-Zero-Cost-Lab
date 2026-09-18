@@ -99,12 +99,15 @@ struct ContentView: View {
                     ForEach(model.products, id: \.id) { product in
                         ProductRow(product: product)
                             .contentShape(Rectangle())
+                            .accessibilityElement(children: .contain)
+                            .accessibilityIdentifier("qa-product-row")
                             .swipeActions(edge: .leading, allowsFullSwipe: false) {
                                 Button {
                                     draft = .editing(product)
                                 } label: {
                                     Label("Edit", systemImage: "pencil")
                                 }
+                                .accessibilityIdentifier("qa-edit-product")
                                 .tint(.blue)
                             }
                             .swipeActions(edge: .trailing) {
@@ -113,10 +116,12 @@ struct ContentView: View {
                                 } label: {
                                     Label("Delete", systemImage: "trash")
                                 }
+                                .accessibilityIdentifier("qa-delete-product")
                             }
                     }
                 } header: {
                     Text("\(model.products.count) products")
+                        .accessibilityIdentifier("qa-product-count")
                 } footer: {
                     Text("Stored locally with the shared KMP Room/SQLite core.")
                 }
@@ -131,6 +136,7 @@ struct ContentView: View {
                         Image(systemName: "plus")
                     }
                     .accessibilityLabel("Add product")
+                    .accessibilityIdentifier("qa-add-product")
                 }
             }
             .overlay {
@@ -224,6 +230,7 @@ private struct ProductEditorView: View {
             Form {
                 Section("Product") {
                     TextField("Name", text: $draft.name)
+                        .accessibilityIdentifier("qa-name-input")
                         .textInputAutocapitalization(.words)
                         .submitLabel(.next)
                         .focused($focusedField, equals: .name)
@@ -232,10 +239,12 @@ private struct ProductEditorView: View {
                         }
 
                     TextField("Quantity", text: $draft.quantity)
+                        .accessibilityIdentifier("qa-quantity-input")
                         .keyboardType(.numberPad)
                         .focused($focusedField, equals: .quantity)
 
                     TextField("Price in cents", text: $draft.priceCents)
+                        .accessibilityIdentifier("qa-price-input")
                         .keyboardType(.numberPad)
                         .focused($focusedField, equals: .price)
                 }
@@ -264,6 +273,7 @@ private struct ProductEditorView: View {
                         onSave(draft)
                         dismiss()
                     }
+                    .accessibilityIdentifier("qa-save-product")
                     .disabled(draft.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
 
