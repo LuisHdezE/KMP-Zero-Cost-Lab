@@ -1,14 +1,13 @@
-name: iOS App + unsigned IPA (Platform-native UX)
+name: iOS QA + unsigned IPA (Platform-native UX)
 
 on:
   workflow_dispatch:
   pull_request:
-    branches: [main, feat/room-sqlite-crud-v1]
 
 jobs:
   ios-app:
     runs-on: macos-15
-    timeout-minutes: 40
+    timeout-minutes: 60
 
     steps:
       - name: Checkout
@@ -32,6 +31,60 @@ jobs:
           java -version
           gradle --version
           xcodebuild -list -project iosApp/iosApp.xcodeproj
+
+      - name: Select and boot iOS simulator
+        run: |
+          set -euo pipefail
+          SIM_UDID="$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          data=json.load(sys.stdin)
+          for runtime in sorted(data["devices"].keys(), reverse=True):
+              for device in data["devices"][runtime]:
+                  if device.get("isAvailable") and device.get("name", "").startswith("iPhone"):
+                      print(device["udid"])
+                      raise SystemExit(0)
+          raise SystemExit("No available iPhone simulator found")
+          ')"
+          echo "IOS_SIMULATOR_UDID=$SIM_UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$SIM_UDID" || true
+          xcrun simctl bootstatus "$SIM_UDID" -b
+
+      - name: COMMON tests on Kotlin Native iOS simulator
+        run: gradle :shared:iosSimulatorArm64Test --stacktrace
+
+      - name: Reset app installation for deterministic UI test state
+        run: |
+          set -euo pipefail
+          xcrun simctl uninstall "$IOS_SIMULATOR_UDID" dev.eliasworks.kmpzerocostlab || true
+
+      - name: Native XCTest/XCUITest regression
+        run: |
+          set -euo pipefail
+          rm -rf "$PWD/build/ios-tests.xcresult"
+          xcodebuild test \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme iosApp \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=$IOS_SIMULATOR_UDID" \
+            -derivedDataPath "$PWD/build/ios-tests" \
+            -resultBundlePath "$PWD/build/ios-tests.xcresult" \
+            -resultBundleVersion 3 \
+            -enableCodeCoverage YES \
+            -collect-test-diagnostics never \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            DEVELOPMENT_TEAM=""
+
+      - name: Export scoped Xcode coverage
+        run: |
+          set -euo pipefail
+          mkdir -p "$PWD/build/ios-qa"
+          xcrun xccov view --report "$PWD/build/ios-tests.xcresult" \
+            | tee "$PWD/build/ios-qa/xccov.txt"
+          xcrun xccov view --report --json "$PWD/build/ios-tests.xcresult" \
+            > "$PWD/build/ios-qa/xccov.json"
+          test -s "$PWD/build/ios-qa/xccov.txt"
+          test -s "$PWD/build/ios-qa/xccov.json"
 
       - name: Build unsigned iPhone app
         run: |
@@ -75,6 +128,18 @@ jobs:
           ditto -c -k --sequesterRsrc --keepParent Payload KMPZeroCostLab-unsigned.ipa
           unzip -l KMPZeroCostLab-unsigned.ipa | head -80
           test -s KMPZeroCostLab-unsigned.ipa
+
+      - name: Upload iOS QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kmp-zero-cost-lab-ios-qa
+          path: |
+            shared/build/reports/tests/**
+            build/ios-tests.xcresult/**
+            build/ios-qa/**
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Upload unsigned IPA
         uses: actions/upload-artifact@v4
