@@ -42,10 +42,6 @@ jobs:
       - name: COMMON JVM + Room tests and Kover reports
         run: gradle :shared:koverXmlReport :shared:koverHtmlReport --stacktrace
 
-      - name: QA coverage gate
-        run: |
-          python3 scripts/qa/qa_gate.py             --coverage shared/build/reports/kover/report.xml             --min-line 90             --min-branch 85             --check qa-guard-contract=PASS             --check common-boundary=PASS             --check common-jvm-room=PASS
-
       - name: Shared Android host tests
         run: gradle :shared:testAndroidHostTest --stacktrace
 
@@ -55,14 +51,19 @@ jobs:
       - name: Build Android debug APK
         run: gradle :androidApp:assembleDebug --stacktrace
 
+      - name: QA coverage gate
+        run: |
+          python3 scripts/qa/qa_gate.py             --coverage shared/build/reports/kover/report.xml             --min-line 90             --min-branch 85             --check qa-guard-contract=PASS             --check common-boundary=PASS             --check common-jvm-room=PASS             --check android-host=PASS             --check android-lint=PASS             --check android-apk=PASS
+
       - name: Upload QA reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: kmp-zero-cost-lab-qa-core
           path: |
             shared/build/reports/kover/**
             shared/build/reports/tests/**
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 7
 
       - name: Upload APK
