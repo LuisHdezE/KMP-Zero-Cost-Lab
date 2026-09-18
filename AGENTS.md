@@ -8,8 +8,9 @@ Before planning, reviewing, or modifying the repository, read:
 
 1. `docs/GENERIC_RULES.md`
 2. `docs/MOBILE_KMP_GUIDELINES.md`
-3. The approved feature `SPEC.md`, when one exists
-4. The approved feature `PLAN.md`, before deriving tasks or implementing
+3. `docs/QA_STRATEGY.md`
+4. The approved feature `SPEC.md`, when one exists
+5. The approved feature `PLAN.md`, before deriving tasks or implementing
 
 Explicit user instructions remain authoritative. When repository documents conflict in a way that changes behavior, scope, platform support, data preservation, cost, or validation, stop that affected part and surface the conflict instead of guessing.
 
@@ -62,9 +63,11 @@ Feature work follows this sequence:
    - Preserve proven behavior before improving or generalizing it.
    - Do not start with UI when shared deterministic behavior is the real migration risk.
 
-6. **Validation**
+6. **Validation and QA**
    - Demonstrate each CA with evidence appropriate to its target.
-   - Use `docs/EVIDENCE_GUIDELINES.md`.
+   - Use `docs/QA_STRATEGY.md` and `docs/EVIDENCE_GUIDELINES.md`.
+   - Pursue the highest meaningful automated coverage that is practical, with stronger expectations for changed deterministic business logic.
+   - Track requirements coverage, code/branch coverage where measurable, regression, integration, platform, device, accessibility, security/privacy and release quality separately.
    - A passing build is not proof of runtime behavior.
    - A screenshot is not proof of persistence, lifecycle, migration, offline behavior, deterministic equivalence or background execution.
 
@@ -146,6 +149,7 @@ See `docs/ZERO_COST_CI.md`.
 - Use small branches and reviewable pull requests.
 - Do not merge without human approval.
 - CI success is required where the change can be exercised by CI, but CI success does not replace acceptance evidence.
+- Apply the QA gates in `docs/QA_STRATEGY.md`; do not merge or release around BLOCKER/CRITICAL defects.
 - Preserve unrelated work.
 - Do not weaken tests or checks to manufacture a green result.
 
