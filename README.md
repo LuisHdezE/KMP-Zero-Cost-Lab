@@ -1,68 +1,141 @@
 # KMP Zero-Cost Lab
 
-Reference pilot to prove a **USD 0 development workflow** for one Kotlin Multiplatform mobile product targeting Android and iOS from a Windows/WSL workstation with no locally owned Mac.
+Reference Kotlin Multiplatform laboratory for a **USD 0 Android + iOS development path** from a Windows/WSL workstation with no locally owned Mac.
 
-## What this repository proves
+The repository also serves as the laboratory for an SDD-KMP process that separates shared semantics from platform-native behavior.
 
-The finished pilot must demonstrate:
+## Current validated model
 
-1. Shared Kotlin + Compose Multiplatform UI.
-2. Android build and tests on a WSL self-hosted GitHub Actions runner.
-3. iOS compilation only on an on-demand hosted macOS runner.
-4. An installable iOS development package that can be provisioned/sideloaded to a physical iPhone from Windows using a free Apple ID workflow.
-5. Shared Room/SQLite CRUD on Android and iOS.
-6. Persistence across restart and app updates.
-7. A real Room/SQLite migration.
-8. Codemagic as a zero-cost iOS fallback provider.
+The current architecture follows this principle:
 
-## Current phase
+> Share the brain when behavior should be identical. Keep the face native when platform experience should remain native.
 
-**Phase 0 - build baseline.** Database code is intentionally deferred until Android and iOS target compilation are green. This isolates build-toolchain failures from database/KSP failures.
+### Shared KMP core
+
+`shared/` currently contains:
+
+- product domain model and repository contract;
+- shared product controller;
+- Room 3 database, DAO and entity;
+- bundled SQLite driver;
+- Room-backed repository;
+- Android and iOS database builders in their target source sets.
+
+The shared module does **not** own the application UI.
+
+### Android
+
+`androidApp/` provides a native Android presentation using:
+
+- Jetpack Compose;
+- Material 3;
+- edge-to-edge layout;
+- Android keyboard and focus behavior;
+- platform composition through `createAndroidProductController(...)`.
+
+### iOS
+
+`iosApp/` provides native SwiftUI presentation using:
+
+- `NavigationStack`;
+- native `List`;
+- swipe actions;
+- native sheets and forms;
+- SwiftUI keyboard/focus interaction;
+- platform composition through the iOS product controller factory.
+
+## What has been demonstrated
+
+At the current validated baseline, repository history and physical-device validation show:
+
+- shared Room/SQLite CRUD on Android and iOS;
+- CREATE / READ / UPDATE / DELETE on physical Android;
+- CREATE / READ / UPDATE / DELETE on physical iPhone;
+- persistence across app restart on both platforms;
+- preservation of existing iPhone data when a newer IPA was installed over the previous build;
+- Android-native Compose / Material 3 UI;
+- iOS-native SwiftUI UI;
+- Android APK build through GitHub-hosted Ubuntu;
+- iPhone `.app` and unsigned `.ipa` build through GitHub-hosted `macos-15`;
+- provisioning/sideloading from Windows with a free Apple ID path;
+- successful launch and CRUD validation on physical iPhone;
+- USD 0 infrastructure for the validated public-repository path.
+
+Primary historical evidence is recorded in PR #4 and PR #5.
+
+## What is still not proven
+
+Do not treat these as complete:
+
+- a real Room schema migration such as database v1 -> v2 on both platforms;
+- preservation of Android data across an installed app upgrade equivalent to the validated iOS upgrade scenario;
+- a private-repository zero-cost iOS CI solution;
+- Codemagic as a validated fallback provider under the current process.
+
+See `docs/VALIDATION-MATRIX.md`.
+
+## Current versions
+
+From `gradle/libs.versions.toml`:
+
+- Kotlin: 2.4.20
+- Android Gradle Plugin: 9.1.1
+- Compose Multiplatform: 1.12.0
+- Android Material 3: 1.4.0
+- Room 3: 3.0.3
+- SQLite bundled driver: 2.7.1
+- KSP: 2.3.12
+- kotlinx.coroutines: 1.11.0
+- Android compile SDK: 37
+- Android target SDK: 36
+- Android min SDK: 24
+
+Current CI uses Gradle 9.3.1.
 
 ## Modules
 
 ```text
-androidApp/     Thin Android host
-shared/         KMP shared UI + logic (later DB/repositories/use cases)
-.github/        CI policy: WSL for normal work, macOS only on demand
-docs/           Validation evidence and roadmap
+androidApp/     Android host and native Compose / Material 3 presentation
+shared/         KMP domain, controller, Room/SQLite persistence and target DB builders
+iosApp/         Native SwiftUI iOS host
+.github/        GitHub Actions for Android/Linux and iOS/macOS
+docs/           SDD-KMP process, evidence and roadmap
 scripts/        Local bootstrap/diagnostics
-```
-
-## Versions pinned for Phase 0
-
-- Kotlin 2.4.20
-- Compose Multiplatform 1.12.0
-- Android Gradle Plugin 9.0.1
-- Gradle 9.1.0
-- Android compile/target SDK 36
-- Android min SDK 24
-
-The AGP/Gradle structure follows the current official Kotlin KMP wizard family, while Kotlin/Compose are pinned to current stable releases for this pilot.
-
-## Local bootstrap in WSL
-
-Requirements: JDK 17+, Android SDK, `curl`, `unzip`, Git.
-
-```bash
-./scripts/doctor.sh
-./scripts/bootstrap-gradle-wrapper.sh
-./gradlew :shared:testAndroidHostTest
-./gradlew :androidApp:assembleDebug
 ```
 
 ## CI policy
 
-### Continuous KMP / Android validation
+### Common / Android
 
-Runs on the repository's **self-hosted WSL runner**.
+The public reference repository uses a standard GitHub-hosted Ubuntu runner.
 
-### iOS validation
+The workflow executes shared Android-host tests and builds the Android debug APK.
 
-`iOS KMP Framework (manual)` is `workflow_dispatch` only and uses `macos-15`. Phase 0 compiles the real `iosArm64` framework but deliberately does not yet package an IPA.
+### iOS
 
-## Next increment
+The iOS application workflow uses standard GitHub-hosted `macos-15` and Xcode to produce an unsigned iPhone app and IPA.
 
-Once Phase 0 is green, add the official thin Xcode host and produce the first unsigned iPhone application artifact. Only after that is green do we activate Room/SQLite CRUD.
+The zero-cost claim is conditional on the provider policy, repository visibility and runner class described in `docs/ZERO_COST_CI.md`.
 
-See `docs/VALIDATION-MATRIX.md` and `docs/ROADMAP.md`.
+A Windows/WSL self-hosted runner may be useful for local/common/Android work, but it cannot replace Xcode for iOS compilation.
+
+## SDD-KMP process
+
+When the SDD-KMP enrichment is present, begin with:
+
+- `AGENTS.md`
+- `docs/GENERIC_RULES.md`
+- `docs/MOBILE_KMP_GUIDELINES.md`
+- `docs/SPEC_TEMPLATE.md`
+- `docs/PLAN_TEMPLATE.md`
+- `docs/TASKS_TEMPLATE.md`
+- `docs/EVIDENCE_GUIDELINES.md`
+- `docs/ZERO_COST_CI.md`
+
+## Next proof
+
+The most valuable remaining technical proof is **real persisted-data migration**, not another UI layer.
+
+The next persistence experiment should create a prior database state, upgrade the schema through an explicit Room migration, and demonstrate preserved data on Android and iOS.
+
+See `docs/ROADMAP.md` and `docs/VALIDATION-MATRIX.md`.
