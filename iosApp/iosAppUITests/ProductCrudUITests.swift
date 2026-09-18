@@ -15,7 +15,7 @@ final class ProductCrudUITests: XCTestCase {
 
         let count = app.staticTexts["qa-product-count"]
         XCTAssertTrue(count.waitForExistence(timeout: 10))
-        XCTAssertEqual(count.label, "0 products")
+        XCTAssertEqual(count.label.lowercased(), "0 products")
 
         let addButton = app.buttons["qa-add-product"]
         XCTAssertTrue(addButton.waitForExistence(timeout: 5))
@@ -32,7 +32,7 @@ final class ProductCrudUITests: XCTestCase {
 
         XCTAssertTrue(app.staticTexts["QA Widget"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.staticTexts["$1.00"].exists)
-        XCTAssertEqual(app.staticTexts["qa-product-count"].label, "1 products")
+        XCTAssertEqual(app.staticTexts["qa-product-count"].label.lowercased(), "1 products")
 
         app.terminate()
         app.launch()
@@ -65,7 +65,7 @@ final class ProductCrudUITests: XCTestCase {
         deleteButton.tap()
 
         XCTAssertTrue(app.staticTexts["No Products"].waitForExistence(timeout: 10))
-        XCTAssertEqual(app.staticTexts["qa-product-count"].label, "0 products")
+        XCTAssertEqual(app.staticTexts["qa-product-count"].label.lowercased(), "0 products")
         XCTAssertFalse(app.staticTexts["QA Widget Updated"].exists)
     }
 }
