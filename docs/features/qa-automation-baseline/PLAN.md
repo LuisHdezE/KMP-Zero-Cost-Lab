@@ -2,7 +2,7 @@
 
 **Reference SPEC:** docs/features/qa-automation-baseline/SPEC.md
 **Reviewed SPEC version:** bc2feac8c4276640b74c23473ef134eb97733a5a
-**State:** In review
+**State:** Approved
 
 <!--
 This document defines HOW the approved SPEC will be implemented.
