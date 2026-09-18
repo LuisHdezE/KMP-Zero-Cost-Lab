@@ -21,10 +21,26 @@ class ProductSnapshot internal constructor(
     fun asList(): List<Product> = items
 }
 
-class ProductController(
+class ProductController internal constructor(
     private val repository: ProductRepository,
+    private val scope: CoroutineScope,
+    private val cancelScopeOnDispose: Boolean,
 ) {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    constructor(repository: ProductRepository) : this(
+        repository = repository,
+        scope = CoroutineScope(SupervisorJob() + Dispatchers.Main),
+        cancelScopeOnDispose = true,
+    )
+
+    internal constructor(
+        repository: ProductRepository,
+        scope: CoroutineScope,
+    ) : this(
+        repository = repository,
+        scope = scope,
+        cancelScopeOnDispose = false,
+    )
+
     private var observationJob: Job? = null
 
     fun start(onChange: (ProductSnapshot) -> Unit) {
@@ -78,6 +94,8 @@ class ProductController(
 
     fun dispose() {
         stop()
-        scope.cancel()
+        if (cancelScopeOnDispose) {
+            scope.cancel()
+        }
     }
 }

@@ -10,7 +10,7 @@ jobs:
   validate:
     # Public repository: use GitHub-hosted Linux instead of exposing a self-hosted WSL runner.
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
 
     steps:
       - name: Checkout
@@ -31,12 +31,40 @@ jobs:
         run: |
           java -version
           gradle --version
+          python3 --version
+
+      - name: QA guard contract tests
+        run: python3 -m unittest discover -s scripts/qa/tests -p 'test_*.py'
+
+      - name: COMMON architecture boundary
+        run: python3 scripts/qa/check_boundaries.py
+
+      - name: COMMON JVM + Room tests and Kover reports
+        run: gradle :shared:koverXmlReport :shared:koverHtmlReport --stacktrace
 
       - name: Shared Android host tests
         run: gradle :shared:testAndroidHostTest --stacktrace
 
+      - name: Android lint
+        run: gradle :androidApp:lintDebug --stacktrace
+
       - name: Build Android debug APK
         run: gradle :androidApp:assembleDebug --stacktrace
+
+      - name: QA coverage gate
+        run: |
+          python3 scripts/qa/qa_gate.py             --coverage shared/build/reports/kover/report.xml             --min-line 90             --min-branch 85             --check qa-guard-contract=PASS             --check common-boundary=PASS             --check common-jvm-room=PASS             --check android-host=PASS             --check android-lint=PASS             --check android-apk=PASS
+
+      - name: Upload QA reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kmp-zero-cost-lab-qa-core
+          path: |
+            shared/build/reports/kover/**
+            shared/build/reports/tests/**
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

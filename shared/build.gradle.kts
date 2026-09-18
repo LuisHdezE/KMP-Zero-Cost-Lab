@@ -5,9 +5,16 @@ plugins {
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidxRoom3)
+    alias(libs.plugins.kover)
 }
 
 kotlin {
+    jvm {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
+        }
+    }
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -41,11 +48,13 @@ kotlin {
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }
 
 dependencies {
+    add("kspJvm", libs.androidx.room3.compiler)
     add("kspAndroid", libs.androidx.room3.compiler)
     add("kspIosArm64", libs.androidx.room3.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room3.compiler)
@@ -53,4 +62,29 @@ dependencies {
 
 room3 {
     schemaDirectory("$projectDir/schemas")
+}
+
+kover {
+    reports {
+        filters {
+            includes {
+                classes(
+                    "dev.eliasworks.kmpzerocostlab.ProductController*",
+                    "dev.eliasworks.kmpzerocostlab.ProductSnapshot*",
+                    "dev.eliasworks.kmpzerocostlab.data.RoomProductRepository*",
+                )
+            }
+        }
+
+        total {
+            xml {
+                onCheck = true
+                xmlFile = layout.buildDirectory.file("reports/kover/report.xml")
+            }
+            html {
+                onCheck = true
+                htmlDir = layout.buildDirectory.dir("reports/kover/html")
+            }
+        }
+    }
 }
